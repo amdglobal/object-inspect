@@ -176,6 +176,13 @@ module.exports = function inspect_(obj, options, depth, seen) {
         s += '</' + $toLowerCase.call(String(obj.nodeName)) + '>';
         return s;
     }
+    if (typeof obj === 'object' && customInspect) {
+        if (inspectSymbol && typeof obj[inspectSymbol] === 'function') {
+            return obj[inspectSymbol]();
+        } else if (customInspect !== 'symbol' && typeof obj.inspect === 'function') {
+            return obj.inspect();
+        }
+    }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
         var xs = arrObjKeys(obj, inspect);
@@ -191,13 +198,6 @@ module.exports = function inspect_(obj, options, depth, seen) {
         }
         if (parts.length === 0) { return '[' + String(obj) + ']'; }
         return '{ [' + String(obj) + '] ' + $join.call(parts, ', ') + ' }';
-    }
-    if (typeof obj === 'object' && customInspect) {
-        if (inspectSymbol && typeof obj[inspectSymbol] === 'function') {
-            return obj[inspectSymbol]();
-        } else if (customInspect !== 'symbol' && typeof obj.inspect === 'function') {
-            return obj.inspect();
-        }
     }
     if (isMap(obj)) {
         var mapParts = [];
